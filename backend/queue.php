@@ -8,8 +8,13 @@
 			$do = 'next';
 	} else if (isset($_GET['max'])) {
 		$do = 'max';
+	} else if (isset($_GET['access'])) {
+		$do = 'access';
 	}
 
-	$data = $handle->query('{"queue" : "' . $do . '"}');
+	if ($do == 'access')
+		$data = $handle->query('{"access" : "' . $_SERVER['REMOTE_ADDR'] . '"}');
+	else
+		$data = $handle->query('{"queue" : "' . $do . '"}');
 	print $data;
 ?>

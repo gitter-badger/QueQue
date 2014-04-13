@@ -4,6 +4,7 @@ from socket import *
 from json import loads, dumps
 
 sockets = {}
+access_list = ['127.0.0.1', '83.253.236.108']
 watch = select.epoll()
 
 sock = socket()
@@ -98,11 +99,16 @@ while 1:
 				if jData['queue'] == 'next' and sockets[fd]['addr'] == '127.0.0.1':
 					if queue['current'] + 1 < nextQnum():
 						queue['current'] += 1
-					sockets[fd]['sock'].send(bytes(dumps({"queue" : queue['current']}), 'UTF-8'))
+					sockets[fd]['sock'].send(bytes(dumps({"queue" : queue['current'], "number" : history[queue['current']]}), 'UTF-8'))
 				elif jData['queue'] == 'max':
 					sockets[fd]['sock'].send(bytes(dumps({"queue" : nextQnum()-1}), 'UTF-8'))
 				else:
 					sockets[fd]['sock'].send(bytes(dumps({"queue" : queue['current']}), 'UTF-8'))
+			elif 'access' in jData:
+				if jData['access'] in access_list:
+					sockets[fd]['sock'].send(bytes(dumps({"access" : True}), 'UTF-8'))
+				else:
+					sockets[fd]['sock'].send(bytes(dumps({"access" : False}), 'UTF-8'))
 
 			watch.unregister(sockets[fd]['sock'].fileno())
 			sockets[fd]['sock'].close()
