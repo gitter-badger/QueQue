@@ -156,21 +156,18 @@ while 1:
 						queue['current'] += 1
 					sockets[fd]['sock'].send(bytes(dumps({"queue" : queue['current'], "number" : history[queue['current']]}), 'UTF-8'))
 				elif jData['queue'] == 'history' and sockets[fd]['addr'] in access_list:
-					if 'offset' in jData:
-						offset = jData['offset']
+					if 'parameters' in jData and 'offset' in jData['parameters']:
+						try:
+							offset = int(jData['parameters']['offset'])
+						except ValueError:
+							offset = 0
 					else:
 						offset = 0
 					returnList = []
-					error = False
 					for index in range(0+offset, 10+offset):
-						if index in history:
-							returnList.append(history[index])
-						elif index > len(history):
-							error = True
-					if not error:
-						sockets[fd]['sock'].send(bytes(dumps({"offset" : offset, "history" : returnList, "order" : "reversed"}), 'UTF-8'))
-					else:
-						sockets[fd]['sock'].send(bytes(dumps({"error" : "Paging is accessing data beyond the history-scope."}), 'UTF-8'))
+						if queue['current']-index in history:
+							returnList.append(history[queue['current']-index])
+					sockets[fd]['sock'].send(bytes(dumps({"offset" : offset, "history" : returnList, "order" : "reversed"}), 'UTF-8'))
 				elif jData['queue'] == 'max':
 					sockets[fd]['sock'].send(bytes(dumps({"queue" : nextQnum()-1}), 'UTF-8'))
 				else:
