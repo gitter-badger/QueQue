@@ -12,6 +12,7 @@ define [
             API: "http://109.124.175.121/QueQue/backend/"
         }
         constructor: ->
+            console.log 'start app'
             @loading = ko.observableArray []
             @messages = ko.observableArray []
             @removeMessage = (message) =>
@@ -31,7 +32,7 @@ define [
             @queueNumber = ko.observable -1
             @queueMax = ko.observable 0
             @currentPage = ko.observable "queue"
-
+            console.log 'qn=', @queueNumber()
             @currentPage.subscribe (currentPage) =>
                 console.log currentPage
                 menu = @menuItems()

@@ -7,6 +7,7 @@
       };
 
       function QueQue() {
+        console.log('start app');
         this.loading = ko.observableArray([]);
         this.messages = ko.observableArray([]);
         this.removeMessage = (function(_this) {
@@ -28,6 +29,7 @@
         this.queueNumber = ko.observable(-1);
         this.queueMax = ko.observable(0);
         this.currentPage = ko.observable("queue");
+        console.log('qn=', this.queueNumber());
         this.currentPage.subscribe((function(_this) {
           return function(currentPage) {
             var item, menu, _i, _len, _results;
