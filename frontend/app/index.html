@@ -36,33 +36,77 @@
         </div>
     </script>
 
+    <div class="container">
+        <h1>QueQue ticket system</h1>
+    </div>
+
     <div data-bind="template: { name: 'error-well', data: messages }"></div>
     <div class="container" data-bind="template: { name: currentPage }">
     </div>
 
         <script type="text/html" id="queue">
+            <div class="yourTurn" data-bind="visible: queue() == user.qpos()">It&#8216;s your turn!</div>
+            <div class="yourTurn passed" data-bind="visible: user.qpos() > 0 && queue() > user.qpos()">Your turn has passed!</div>
+            <div data-bind="template: {name: 'number-modal-template', if: queueNumber}"></div>
             <div class="row">
                 <div class="col-md-6">
-                    <div class="queueNumber" data-bind="html: queue"></div>
+                    <div class="info">
+                        <div class="label">Processing</div>
+                        <div class="queueNumber" data-bind="html: '#'+queue()"></div>
+                        <div class="label">In queue</div>
+                        <div class="queueNumber" data-bind="html: queueMax() - queue()"></div>
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="form well">
+                    <div class="info">
                         <div class="ticket" data-bind="if: ticket">
-                            Your ticket number is <div class="ticketPos" data-bind="html: user.qpos"></div>
+                            <span class="label">Your ticket number is</span>
+                            <div class="ticketPos queueNumber" data-bind="html: user.qpos"></div>
+                            <span class="label">Numbers until your turn</span>
+                            <div class="queueNumber" data-bind="html: user.qpos() - queue()"></div>
+                        </div>
+                        <div class="panel" data-bind="if: !ticket()">
+                            <h2>Read Me</h2>
+                            <p>Please enter a valid phone number where we can reach you, your phone number will be used to identify you once it is your turn.</p>
+                            <p>If you leave this page open once you have signed up for the queue it will auto refresh the queue position and notify you of progress. Keeping track of how many numbers are in front of you and who is being processed.</p>
+                            <p>Typing in your number again while still in the queue will return the same queue number, if you forgot it or just want to reactivate the auto tracker. If you have been helped and type in your number again you will get a new number.</p>
                         </div>
 
-                        <form data-bind="submit: getTicket">
-                            <div class="form-group">
-                                <input placeholder="+4670000000" id="number" name="number" data-bind="value: user.number" type="text" class="form-control">
-                            </div>
-                            <button class="btn btn-primary">Get your ticket</button>
-                        </form>
-                        <!-- ko if: isLocal -->
-                        <button type="button" class="btn btn-primary pull-right" data-bind="click: nextNumber">Next number</button>
-                        <!-- /ko -->
+                        <div class="form well">
+
+                            <form data-bind="submit: getTicket">
+                                <div class="form-group">
+                                    <input placeholder="+4670000000" id="number" name="number" data-bind="value: user.number" type="text" class="form-control">
+                                </div>
+                                <button class="btn btn-primary">Get your ticket</button>
+                            </form>
+                            <!-- ko if: Access -->
+                            <button type="button" class="btn btn-primary pull-right" data-bind="click: nextNumber">Next number</button>
+                            <!-- /ko -->
+                        </div>
                     </div>
                 </div>
             </div>
+        </script>
+        <script type="text/html" id="number-modal-template">
+            <div id="number-modal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Queuee number</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                Number <span data-bind="html: queueNumber"></span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
         </script>
 
     <!--(if target dist)>

@@ -43,17 +43,37 @@
     background: @brand-warning;
     border-color: darken(@brand-warning, 20%);
 }
-
+.info{
+    margin-top: 5em;
+}
 .queueNumber{
     font-size: 15em;
     font-weight: bold;
+    line-height: 0.85em;
 }
 .form{
     margin-top: 5em;
 }
 .ticket{
-    text-align: center;
+    // text-align: center;
     .ticketPos{
-        font-size: 5em;
+        color: rgba(0, 150, 0, 1)
+        // font-size: 5em;
+    }
+}
+.label{
+    text-transform: uppercase;
+    font-size: 1.7em;
+    color: rgba(0, 0, 0, 0.2);
+}
+.yourTurn{
+    margin: 0.5em 0;
+    text-align: center;
+    font-size: 15em;
+    font-weight: bold;
+    line-height: 0.85em;
+    color: rgba(0, 150, 0, 1);
+    &.passed{
+        color: rgba(150, 0, 0, 1);
     }
 }

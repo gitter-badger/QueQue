@@ -32,9 +32,16 @@ define [
                     else
                         item.active false
 
-            @isLocal = ko.computed =>
-                currentPage = @currentPage
-                return window.location.hostname == "109.124.175.121"
+            @Access = ko.observable false
+            @checkAccess = =>
+                console.log 'checkAccess'
+                @ajaxRequest({
+                    type: 'GET'
+                    url: 'queue.php?access'
+                    callback: (data) =>
+                        if data.hasOwnProperty 'access'
+                            @Access data.access
+                },false)
 
             @closeModal = ->
                 $('.modal').modal('hide')
@@ -68,6 +75,9 @@ define [
             }
             @ticket = ko.observable false
             @queue = ko.observable 0
+            @queueMonitor = false
+            @queueNumber = ko.observable null
+            @queueMax = ko.observable 0
             @getCurrentQueue = =>
                 console.log 'getCurrentQueue'
                 @ajaxRequest({
@@ -76,6 +86,17 @@ define [
                     callback: (data) =>
                         if data.hasOwnProperty 'queue'
                             @queue data.queue
+                            if @user.qpos() > 0 && data.queue > @user.qpos()
+                                @stopQueueMonitor()
+                },false)
+            @getCurrentQueueMax = =>
+                console.log 'getCurrentQueueMax'
+                @ajaxRequest({
+                    type: 'GET'
+                    url: 'queue.php?max'
+                    callback: (data) =>
+                        if data.hasOwnProperty 'queue'
+                            @queueMax data.queue
                 },false)
             @getTicket = =>
                 console.log 'getTicket'
@@ -100,13 +121,27 @@ define [
                     callback: (data) =>
                         if data.hasOwnProperty 'queue'
                             @queue data.queue
+                        if data.hasOwnProperty 'number'
+                            @queueNumber data.number
+                            $('#number-modal').modal()
                 },false)
+
+            @stopQueueMonitor = () =>
+                clearInterval @queueMonitor
+            @startQueueMonitor = () =>
+                @getCurrentQueue()
+                @getCurrentQueueMax()
+                @queueMonitor = setInterval( =>
+                    @getCurrentQueue()
+                    @getCurrentQueueMax()
+                ,30000)
+
 
             @setUpRoutes = () =>
                 @router = sammy( (context) =>
 
                     context.get '#/', =>
-                        @getCurrentQueue()
+                        @startQueueMonitor()
                         @currentPage "queue"
 
                     #Handle empty hash, e.g user uses back button on first "page"
@@ -129,6 +164,7 @@ define [
                         return @router.defaultCheckFormSubmission(form)
 
             @init = () =>
+                @checkAccess()
                 @setUpRoutes()
             @init()
 

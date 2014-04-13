@@ -36,13 +36,21 @@
             return _results;
           };
         })(this));
-        this.isLocal = ko.computed((function(_this) {
+        this.Access = ko.observable(false);
+        this.checkAccess = (function(_this) {
           return function() {
-            var currentPage;
-            currentPage = _this.currentPage;
-            return window.location.hostname === "109.124.175.121";
+            console.log('checkAccess');
+            return _this.ajaxRequest({
+              type: 'GET',
+              url: 'queue.php?access',
+              callback: function(data) {
+                if (data.hasOwnProperty('access')) {
+                  return _this.Access(data.access);
+                }
+              }
+            }, false);
           };
-        })(this));
+        })(this);
         this.closeModal = function() {
           $('.modal').modal('hide');
           $('body').removeClass('modal-open');
@@ -86,6 +94,9 @@
         };
         this.ticket = ko.observable(false);
         this.queue = ko.observable(0);
+        this.queueMonitor = false;
+        this.queueNumber = ko.observable(null);
+        this.queueMax = ko.observable(0);
         this.getCurrentQueue = (function(_this) {
           return function() {
             console.log('getCurrentQueue');
@@ -94,7 +105,24 @@
               url: 'queue.php',
               callback: function(data) {
                 if (data.hasOwnProperty('queue')) {
-                  return _this.queue(data.queue);
+                  _this.queue(data.queue);
+                  if (_this.user.qpos() > 0 && data.queue > _this.user.qpos()) {
+                    return _this.stopQueueMonitor();
+                  }
+                }
+              }
+            }, false);
+          };
+        })(this);
+        this.getCurrentQueueMax = (function(_this) {
+          return function() {
+            console.log('getCurrentQueueMax');
+            return _this.ajaxRequest({
+              type: 'GET',
+              url: 'queue.php?max',
+              callback: function(data) {
+                if (data.hasOwnProperty('queue')) {
+                  return _this.queueMax(data.queue);
                 }
               }
             }, false);
@@ -129,17 +157,36 @@
               url: 'queue.php?next',
               callback: function(data) {
                 if (data.hasOwnProperty('queue')) {
-                  return _this.queue(data.queue);
+                  _this.queue(data.queue);
+                }
+                if (data.hasOwnProperty('number')) {
+                  _this.queueNumber(data.number);
+                  return $('#number-modal').modal();
                 }
               }
             }, false);
+          };
+        })(this);
+        this.stopQueueMonitor = (function(_this) {
+          return function() {
+            return clearInterval(_this.queueMonitor);
+          };
+        })(this);
+        this.startQueueMonitor = (function(_this) {
+          return function() {
+            _this.getCurrentQueue();
+            _this.getCurrentQueueMax();
+            return _this.queueMonitor = setInterval(function() {
+              _this.getCurrentQueue();
+              return _this.getCurrentQueueMax();
+            }, 30000);
           };
         })(this);
         this.setUpRoutes = (function(_this) {
           return function() {
             _this.router = sammy(function(context) {
               context.get('#/', function() {
-                _this.getCurrentQueue();
+                _this.startQueueMonitor();
                 return _this.currentPage("queue");
               });
               return context.get(/([^]*)/, function() {
@@ -164,6 +211,7 @@
         })(this);
         this.init = (function(_this) {
           return function() {
+            _this.checkAccess();
             return _this.setUpRoutes();
           };
         })(this);

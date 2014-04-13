@@ -7252,16 +7252,33 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   background: #f0ad4e;
   border-color: #c77c11;
 }
+.info {
+  margin-top: 5em;
+}
 .queueNumber {
   font-size: 15em;
   font-weight: bold;
+  line-height: 0.85em;
 }
 .form {
   margin-top: 5em;
 }
-.ticket {
-  text-align: center;
-}
 .ticket .ticketPos {
-  font-size: 5em;
+  color: #009600;
+}
+.label {
+  text-transform: uppercase;
+  font-size: 1.7em;
+  color: rgba(0, 0, 0, 0.2);
+}
+.yourTurn {
+  margin: 0.5em 0;
+  text-align: center;
+  font-size: 15em;
+  font-weight: bold;
+  line-height: 0.85em;
+  color: #009600;
+}
+.yourTurn.passed {
+  color: #960000;
 }
