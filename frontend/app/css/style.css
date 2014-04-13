@@ -7259,12 +7259,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 .form {
   margin-top: 5em;
 }
-.ticket .ticketNumber {
-  font-style: italic;
-  display: inline-block;
-  margin: 5px;
+.ticket {
+  text-align: center;
 }
 .ticket .ticketPos {
-  display: inline-block;
-  margin: 5px;
+  font-size: 5em;
 }

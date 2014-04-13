@@ -47,8 +47,8 @@ define [
                 $.ajax({
                     type: options.type
                     url: this.options.API + options.url
-                    data: JSON.stringify(data)
-                    contentType: 'application/json'
+                    dataType: 'json'
+                    data: data
                     complete: (data) =>
                         @loading.pop()
                     success: options.callback
@@ -64,10 +64,10 @@ define [
 
             @user = {
                 number: ko.observable null
-                qPos: ko.observable 0
+                qpos: ko.observable 0
             }
             @ticket = ko.observable false
-            @queue = 0
+            @queue = ko.observable 0
             @getCurrentQueue = =>
                 console.log 'getCurrentQueue'
                 @ajaxRequest({
@@ -79,13 +79,19 @@ define [
                 },false)
             @getTicket = =>
                 console.log 'getTicket'
+                user = ko.toJS(@user)
+                delete user.__ko_mapping__
+                params = $.param(user)
+                console.log params
                 @ajaxRequest({
                     type: 'GET'
                     url: 'phone.php'
                     callback: (data) =>
                         console.log data
-                        @ticket = ko.mapping.fromJS(data)
-                },false)
+                        if data.hasOwnProperty 'qpos'
+                            @user.qpos data.qpos
+                        @ticket true
+                },params)
             @nextNumber = =>
                 console.log 'nextNumber'
                 @ajaxRequest({

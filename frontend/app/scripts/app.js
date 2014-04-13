@@ -56,8 +56,8 @@
             return $.ajax({
               type: options.type,
               url: _this.options.API + options.url,
-              data: JSON.stringify(data),
-              contentType: 'application/json',
+              dataType: 'json',
+              data: data,
               complete: function(data) {
                 return _this.loading.pop();
               },
@@ -82,10 +82,10 @@
         })(this);
         this.user = {
           number: ko.observable(null),
-          qPos: ko.observable(0)
+          qpos: ko.observable(0)
         };
         this.ticket = ko.observable(false);
-        this.queue = 0;
+        this.queue = ko.observable(0);
         this.getCurrentQueue = (function(_this) {
           return function() {
             console.log('getCurrentQueue');
@@ -102,15 +102,23 @@
         })(this);
         this.getTicket = (function(_this) {
           return function() {
+            var params, user;
             console.log('getTicket');
+            user = ko.toJS(_this.user);
+            delete user.__ko_mapping__;
+            params = $.param(user);
+            console.log(params);
             return _this.ajaxRequest({
               type: 'GET',
               url: 'phone.php',
               callback: function(data) {
                 console.log(data);
-                return _this.ticket = ko.mapping.fromJS(data);
+                if (data.hasOwnProperty('qpos')) {
+                  _this.user.qpos(data.qpos);
+                }
+                return _this.ticket(true);
               }
-            }, false);
+            }, params);
           };
         })(this);
         this.nextNumber = (function(_this) {

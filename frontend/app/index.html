@@ -47,9 +47,8 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form well">
-                        <div class="ticket" data-bind="with: ticket">
-                            <div class="ticketNumber" data-bind="html: number"></div>
-                            <div class="ticketPos" data-bind="html: qPos"></div>
+                        <div class="ticket" data-bind="if: ticket">
+                            Your ticket number is <div class="ticketPos" data-bind="html: user.qpos"></div>
                         </div>
 
                         <form data-bind="submit: getTicket">
