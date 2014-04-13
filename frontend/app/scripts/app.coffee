@@ -28,6 +28,7 @@ define [
             }
             @ticket = ko.observable false
             @queue = ko.observable 0
+            @pastQueue = ko.observableArray []
             @queueMonitor = false
             @queueNumber = ko.observable -1
             @queueMax = ko.observable 0
@@ -90,6 +91,18 @@ define [
                             if @user.qpos() > 0 && data.queue > @user.qpos()
                                 @stopQueueMonitor()
                 },false)
+            @getPastQueue = =>
+                console.log 'getPastQueue'
+                @ajaxRequest({
+                    type: 'GET'
+                    url: 'queue.php?history'
+                    callback: (data) =>
+                        console.log data
+                        if data.hasOwnProperty 'queue'
+                            @queue data.queue
+                            if @user.qpos() > 0 && data.queue > @user.qpos()
+                                @stopQueueMonitor()
+                },false)
             @getCurrentQueueMax = =>
                 console.log 'getCurrentQueueMax'
                 @ajaxRequest({
@@ -132,9 +145,11 @@ define [
             @startQueueMonitor = () =>
                 @getCurrentQueue()
                 @getCurrentQueueMax()
+                @getPastQueue()
                 @queueMonitor = setInterval( =>
                     @getCurrentQueue()
                     @getCurrentQueueMax()
+                    @getPastQueue()
                 ,30000)
 
 

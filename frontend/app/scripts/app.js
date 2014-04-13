@@ -25,6 +25,7 @@
         };
         this.ticket = ko.observable(false);
         this.queue = ko.observable(0);
+        this.pastQueue = ko.observableArray([]);
         this.queueMonitor = false;
         this.queueNumber = ko.observable(-1);
         this.queueMax = ko.observable(0);
@@ -92,6 +93,23 @@
         this.getCurrentQueue = (function(_this) {
           return function() {
             console.log('getCurrentQueue');
+            return _this.ajaxRequest({
+              type: 'GET',
+              url: 'queue.php',
+              callback: function(data) {
+                if (data.hasOwnProperty('queue')) {
+                  _this.queue(data.queue);
+                  if (_this.user.qpos() > 0 && data.queue > _this.user.qpos()) {
+                    return _this.stopQueueMonitor();
+                  }
+                }
+              }
+            }, false);
+          };
+        })(this);
+        this.getPastQueue = (function(_this) {
+          return function() {
+            console.log('getPastQueue');
             return _this.ajaxRequest({
               type: 'GET',
               url: 'queue.php',

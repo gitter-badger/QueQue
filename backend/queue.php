@@ -8,6 +8,8 @@
 		$do = 'max';
 	} else if (isset($_GET['access'])) {
 		$do = 'access';
+	} else if (isset($_GET['history'])) {
+		$do = 'history';
 	} else {
 		$do = 'current';
 	}
