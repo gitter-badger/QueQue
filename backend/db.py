@@ -78,6 +78,7 @@ while 1:
 				del sockets[fd]
 				continue
 			jData = loads(data.decode('utf-8'))
+			print(sockets[fd]['addr'],'asked:',jData)
 			if 'number' in jData:
 				nr = jData['number']
 				if nr in queue:

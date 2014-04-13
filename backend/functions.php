@@ -4,7 +4,7 @@
 		TODO: Write a more advanced security-check
 		TODO: Switch to $_POST !!!
 	*/
-	if (isset($_GET['phone']) && isset($_GET['phone'][12])) {
+	if (isset($_GET['number']) && isset($_GET['number'][12])) {
 		die('Unwanted phone-number inserted');
 	}
 
@@ -37,5 +37,6 @@
 		}
 	}
 
-	$_SESSION['phone'] = sanetizePhoneNumber($_GET['phone']);
+	if (isset($_GET['number']))
+		$_SESSION['number'] = sanetizePhoneNumber($_GET['number']);
 ?>
