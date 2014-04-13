@@ -18,6 +18,15 @@
           edition: ko.observable(false),
           subject: ko.observable(false)
         };
+        this.user = {
+          number: ko.observable(null),
+          qpos: ko.observable(0)
+        };
+        this.ticket = ko.observable(false);
+        this.queue = ko.observable(0);
+        this.queueMonitor = false;
+        this.queueNumber = ko.observable(null);
+        this.queueMax = ko.observable(0);
         this.currentPage = ko.observable("queue");
         this.currentPage.subscribe((function(_this) {
           return function(currentPage) {
@@ -88,15 +97,6 @@
             });
           };
         })(this);
-        this.user = {
-          number: ko.observable(null),
-          qpos: ko.observable(0)
-        };
-        this.ticket = ko.observable(false);
-        this.queue = ko.observable(0);
-        this.queueMonitor = false;
-        this.queueNumber = ko.observable(null);
-        this.queueMax = ko.observable(0);
         this.getCurrentQueue = (function(_this) {
           return function() {
             console.log('getCurrentQueue');

@@ -21,6 +21,15 @@ define [
                 edition: ko.observable false
                 subject: ko.observable false
             }
+            @user = {
+                number: ko.observable null
+                qpos: ko.observable 0
+            }
+            @ticket = ko.observable false
+            @queue = ko.observable 0
+            @queueMonitor = false
+            @queueNumber = ko.observable null
+            @queueMax = ko.observable 0
             @currentPage = ko.observable "queue"
 
             @currentPage.subscribe (currentPage) =>
@@ -69,15 +78,6 @@ define [
                     headers: headers
                 })
 
-            @user = {
-                number: ko.observable null
-                qpos: ko.observable 0
-            }
-            @ticket = ko.observable false
-            @queue = ko.observable 0
-            @queueMonitor = false
-            @queueNumber = ko.observable null
-            @queueMax = ko.observable 0
             @getCurrentQueue = =>
                 console.log 'getCurrentQueue'
                 @ajaxRequest({
