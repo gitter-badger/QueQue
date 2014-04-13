@@ -102,7 +102,7 @@ define [
                             @queue data.queue
                             if @user.qpos() > 0 && data.queue > @user.qpos()
                                 @stopQueueMonitor()
-                        if data.hasOwnProperty 'history' && data.history.length > 0
+                        if data.hasOwnProperty 'history'
                             for item in data.history
                                 @pastQueue.push item
                 },false)

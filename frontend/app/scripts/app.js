@@ -122,7 +122,7 @@
                     _this.stopQueueMonitor();
                   }
                 }
-                if (data.hasOwnProperty('history' && data.history.length > 0)) {
+                if (data.hasOwnProperty('history')) {
                   _ref = data.history;
                   _results = [];
                   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
