@@ -15,6 +15,7 @@ require.config({
         bootstrap: '../components/bootstrap/dist/js/bootstrap',
         i18next: '../components/i18next/i18next.amd.withJQuery',
         lodash: '../components/lodash/dist/lodash.compat',
+        sammy: '../components/sammy/lib/sammy',
     },
     shim: {
         bootstrap: {
