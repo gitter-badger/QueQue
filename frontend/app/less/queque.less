@@ -1,0 +1,45 @@
+@import "animate.less";
+
+@black: hsl(0, 0%, 10%);
+@white: hsl(360, 100%, 100%);
+
+.loading-indicator{
+    z-index: 10000;
+    background: fade(@black, 50%);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    .throbber{
+        position: absolute;
+        display: block;
+        top: 50%;
+        left: 50%;
+        height: 50px;
+        width: 400px;
+        margin-left: -200px;
+        margin-top: -25px;
+        color: @white;
+        text-align: center;
+        font-size: 3em;
+
+        .animated();
+        .infinite();
+        .pulse();
+    }
+}
+
+.well{
+    ul{
+        margin-bottom: 0;
+        padding: 0;
+        list-style: none;
+    }
+}
+
+.error{
+    background: @brand-warning;
+    border-color: darken(@brand-warning, 20%);
+}

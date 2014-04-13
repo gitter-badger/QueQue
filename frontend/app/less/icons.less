@@ -1,0 +1,98 @@
+@font-face {
+    font-family: 'vgr-icons';
+    src:url('../fonts/vgr-icons.eot?-hziby8');
+    src:url('../fonts/vgr-icons.eot?#iefix-hziby8') format('embedded-opentype'),
+        url('../fonts/vgr-icons.woff?-hziby8') format('woff'),
+        url('../fonts/vgr-icons.ttf?-hziby8') format('truetype'),
+        url('../fonts/vgr-icons.svg?-hziby8#vgr-icons') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*
+    This is a fix for chrome on android
+    http://www.adtrak.co.uk/blog/font-face-chrome-rendering/#fix
+    Also had to remove the ID hash-tag form the SVG declaration
+*/
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    @font-face {
+        font-family:'vgr-icons';
+        src:url('../fonts/vgr-icons.svg') format('svg');
+    }
+}
+
+
+.vgr-icon {
+    font-family: 'vgr-icons';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.vgr-icon_002_people:before {
+    content: "\e600";
+}
+.vgr-icon_001_opinion:before {
+    content: "\e601";
+}
+.vgr-icon_020_close:before {
+    content: "\e602";
+}
+.vgr-icon_019_search:before {
+    content: "\e603";
+}
+.vgr-icon_018_hide:before {
+    content: "\e604";
+}
+.vgr-icon_017_show:before {
+    content: "\e605";
+}
+.vgr-icon_016_region:before {
+    content: "\e606";
+}
+.vgr-icon_015_availability:before {
+    content: "\e607";
+}
+.vgr-icon_014_foreword:before {
+    content: "\e608";
+}
+.vgr-icon_013_economy:before {
+    content: "\e609";
+}
+.vgr-icon_012_quality:before {
+    content: "\e60a";
+}
+.vgr-icon_011_goodcare:before {
+    content: "\e60b";
+}
+.vgr-icon_010_careconsumtion:before {
+    content: "\e60c";
+}
+.vgr-icon_009_basiccare:before {
+    content: "\e60d";
+}
+.vgr-icon_008_emergencycare:before {
+    content: "\e60e";
+}
+.vgr-icon_007_equal:before {
+    content: "\e60f";
+}
+.vgr-icon_006_dentist:before {
+    content: "\e610";
+}
+.vgr-icon_005_accidents:before {
+    content: "\e611";
+}
+.vgr-icon_004_medication:before {
+    content: "\e612";
+}
+.vgr-icon_003_cancer:before {
+    content: "\e613";
+}
