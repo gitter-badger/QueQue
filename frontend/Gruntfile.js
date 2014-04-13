@@ -334,6 +334,7 @@ module.exports = function(grunt) {
             // 'copy:devDependancies',
             'test',
             'clean:dist',
+            'compile:coffee',
             'compile:js',
             'compile:css',
             'compile:html',
