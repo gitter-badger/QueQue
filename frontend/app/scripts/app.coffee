@@ -27,6 +27,12 @@ define [
                 qpos: ko.observable 0
             }
             @ticket = ko.observable false
+            @ticket.subscribe = =>
+                if @ticket() == false
+                    $('.nav-tabs a').click(function (e) {
+                        e.preventDefault()
+                        $(this).tab('show')
+                    })
             @queue = ko.observable 0
             @pastQueue = ko.observableArray []
             @queueMonitor = false
