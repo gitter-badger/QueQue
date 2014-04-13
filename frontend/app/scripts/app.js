@@ -100,33 +100,33 @@
             }, false);
           };
         })(this);
-        this.getTicket = function() {
-          console.log('getTicket');
-          return this.ajaxRequest({
-            type: 'GET',
-            url: 'phone.php',
-            callback: (function(_this) {
-              return function(data) {
+        this.getTicket = (function(_this) {
+          return function() {
+            console.log('getTicket');
+            return _this.ajaxRequest({
+              type: 'GET',
+              url: 'phone.php',
+              callback: function(data) {
                 console.log(data);
                 return _this.ticket = ko.mapping.fromJS(data);
-              };
-            })(this)
-          }, false);
-        };
-        this.nextNumber = function() {
-          console.log('nextNumber');
-          return this.ajaxRequest({
-            type: 'GET',
-            url: 'queue.php?next',
-            callback: (function(_this) {
-              return function(data) {
+              }
+            }, false);
+          };
+        })(this);
+        this.nextNumber = (function(_this) {
+          return function() {
+            console.log('nextNumber');
+            return _this.ajaxRequest({
+              type: 'GET',
+              url: 'queue.php?next',
+              callback: function(data) {
                 if (data.hasOwnProperty('queue')) {
                   return _this.queue(data.queue);
                 }
-              };
-            })(this)
-          }, false);
-        };
+              }
+            }, false);
+          };
+        })(this);
         this.setUpRoutes = (function(_this) {
           return function() {
             _this.router = sammy(function(context) {

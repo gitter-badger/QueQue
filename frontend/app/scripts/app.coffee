@@ -77,7 +77,7 @@ define [
                         if data.hasOwnProperty 'queue'
                             @queue data.queue
                 },false)
-            @getTicket = ->
+            @getTicket = =>
                 console.log 'getTicket'
                 @ajaxRequest({
                     type: 'GET'
@@ -86,7 +86,7 @@ define [
                         console.log data
                         @ticket = ko.mapping.fromJS(data)
                 },false)
-            @nextNumber = ->
+            @nextNumber = =>
                 console.log 'nextNumber'
                 @ajaxRequest({
                     type: 'GET'
