@@ -309,6 +309,21 @@ module.exports = function(grunt) {
                     logConcurrentOutput: true,
                     limit: 6
                 }
+            },
+            build: {
+                tasks: [
+                    'test',
+                    'clean:dist',
+                    'compile:coffee',
+                    'compile:js',
+                    'compile:css',
+                    'compile:html',
+                    'compile:version',
+                    'copy:dist',
+                    'copy:fonts',
+                    'copy:locales',
+                    'compile:json'
+                ]
             }
         }
 
@@ -344,6 +359,7 @@ module.exports = function(grunt) {
             'copy:locales',
             'compile:json'
         ]);
+    grunt.registerTask('cc', ['concurrent:build']);
 
 
 
