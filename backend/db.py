@@ -83,8 +83,14 @@ while 1:
 				del sockets[fd]
 				continue
 			jData = loads(data.decode('utf-8'))
+			
 			print(sockets[fd]['addr'],'asked:',jData)
+
 			if 'number' in jData:
+				## == TODO:
+				## ==   When the user registers, send a web-request to XXX
+				## ==   which then calls the users phone with a spoofed 6-digit number
+				## ==   that should act as a 2-way-auth for verifying the identity of the user.
 				nr = jData['number']
 				if nr in queue:
 					qPos = queue[nr]
