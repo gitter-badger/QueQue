@@ -334,7 +334,7 @@ module.exports = function(grunt) {
     require("matchdep").filterDev("grunt-*").forEach(grunt.loadNpmTasks);
 
     grunt.registerTask('compile:coffee', ['coffee']);
-    grunt.registerTask('compile:js', ['concat', 'requirejs']);
+    grunt.registerTask('compile:js', ['concat', 'requirejs', 'uglify']);
     grunt.registerTask('compile:css', ['less:dev', 'less:prod']);
     grunt.registerTask('compile:json', ['json-minify']);
     grunt.registerTask('test', ['htmlhint', 'jshint']);
