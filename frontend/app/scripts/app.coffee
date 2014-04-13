@@ -28,7 +28,7 @@ define [
             @ticket = ko.observable false
             @queue = ko.observable 0
             @queueMonitor = false
-            @queueNumber = ko.observable null
+            @queueNumber = ko.observable -1
             @queueMax = ko.observable 0
             @currentPage = ko.observable "queue"
 

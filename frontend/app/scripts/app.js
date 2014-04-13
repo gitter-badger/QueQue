@@ -25,7 +25,7 @@
         this.ticket = ko.observable(false);
         this.queue = ko.observable(0);
         this.queueMonitor = false;
-        this.queueNumber = ko.observable(null);
+        this.queueNumber = ko.observable(-1);
         this.queueMax = ko.observable(0);
         this.currentPage = ko.observable("queue");
         this.currentPage.subscribe((function(_this) {
