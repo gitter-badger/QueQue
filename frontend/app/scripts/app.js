@@ -114,7 +114,7 @@
               type: 'GET',
               url: 'queue.php?history',
               callback: function(data) {
-                var item, _i, _len, _results;
+                var item, _i, _len, _ref, _results;
                 console.log(data);
                 if (data.hasOwnProperty('queue')) {
                   _this.queue(data.queue);
@@ -122,10 +122,11 @@
                     _this.stopQueueMonitor();
                   }
                 }
-                if (data.length > 0) {
+                if (data.hasOwnProperty('history' && data.history.length > 0)) {
+                  _ref = data.history;
                   _results = [];
-                  for (_i = 0, _len = data.length; _i < _len; _i++) {
-                    item = data[_i];
+                  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                    item = _ref[_i];
                     _results.push(_this.pastQueue.push(item));
                   }
                   return _results;
