@@ -69,12 +69,12 @@ define [
                         @loading.pop()
                     success: options.callback
                     error: (e) =>
-                        if (e.status != 200)
-                            if (e.status == 401)
-                                @logout()
-                            if e.hasOwnProperty 'message'
-                                @messages.push({error: 0, error_description: e.responseJSON.message})
-                            @loading.pop()
+                        #if (e.status != 200)
+                            # if (e.status == 401)
+                            # if e.hasOwnProperty 'message'
+                                # @messages.push({error: 0, error_description: e.responseJSON.message})
+                        console.log e
+                        @loading.pop()
                     headers: headers
                 })
 

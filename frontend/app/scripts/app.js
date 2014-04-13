@@ -80,18 +80,8 @@
               },
               success: options.callback,
               error: function(e) {
-                if (e.status !== 200) {
-                  if (e.status === 401) {
-                    _this.logout();
-                  }
-                  if (e.hasOwnProperty('message')) {
-                    _this.messages.push({
-                      error: 0,
-                      error_description: e.responseJSON.message
-                    });
-                  }
-                  return _this.loading.pop();
-                }
+                console.log(e);
+                return _this.loading.pop();
               },
               headers: headers
             });
