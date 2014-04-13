@@ -1,5 +1,5 @@
 (function() {
-  define(['jquery', 'knockout', 'lodash', 'sammy'], function($, ko, _, sammy) {
+  define(['jquery', 'knockout', 'lodash', 'sammy', 'knockoutmapping'], function($, ko, _, sammy) {
     var QueQue;
     QueQue = (function() {
       QueQue.prototype.options = {

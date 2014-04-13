@@ -5,6 +5,7 @@ define [
     'knockout'
     'lodash'
     'sammy'
+    'knockoutmapping'
 ], ($, ko, _, sammy) ->
     class QueQue
         options: {
