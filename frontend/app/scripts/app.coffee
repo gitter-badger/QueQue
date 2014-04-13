@@ -31,6 +31,10 @@ define [
                     else
                         item.active false
 
+            @isLocal = ko.computed =>
+                currentPage = @currentPage
+                return window.location.hostname == "109.124.175.121"
+
             @closeModal = ->
                 $('.modal').modal('hide')
                 $('body').removeClass('modal-open')
@@ -57,6 +61,10 @@ define [
                     headers: headers
                 })
 
+            @user = {
+                number: ko.observable null
+                qPos: ko.observable 0
+            }
             @ticket = ko.observable false
             @queue = 0
             @getCurrentQueue = =>

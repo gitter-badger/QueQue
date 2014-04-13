@@ -36,6 +36,13 @@
             return _results;
           };
         })(this));
+        this.isLocal = ko.computed((function(_this) {
+          return function() {
+            var currentPage;
+            currentPage = _this.currentPage;
+            return window.location.hostname === "109.124.175.121";
+          };
+        })(this));
         this.closeModal = function() {
           $('.modal').modal('hide');
           $('body').removeClass('modal-open');
@@ -73,6 +80,10 @@
             });
           };
         })(this);
+        this.user = {
+          number: ko.observable(null),
+          qPos: ko.observable(0)
+        };
         this.ticket = ko.observable(false);
         this.queue = 0;
         this.getCurrentQueue = (function(_this) {

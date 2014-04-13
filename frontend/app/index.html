@@ -41,13 +41,29 @@
     </div>
 
         <script type="text/html" id="queue">
-            <div data-bind="html: queue"></div>
-            <div data-bind="with: ticket">
-                <div data-bind="html: number"></div>
-                <div data-bind="html: qPos"></div>
-            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="queueNumber" data-bind="html: queue"></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form well">
+                        <div class="ticket" data-bind="with: ticket">
+                            <div class="ticketNumber" data-bind="html: number"></div>
+                            <div class="ticketPos" data-bind="html: qPos"></div>
+                        </div>
 
-            <button class="btn btn-primary" data-bind="click: nextNumber">Next number</button>
+                        <form data-bind="submit: getTicket">
+                            <div class="form-group">
+                                <input placeholder="+4670000000" id="number" name="number" data-bind="value: user.number" type="text" class="form-control">
+                            </div>
+                            <button class="btn btn-primary">Get your ticket</button>
+                        </form>
+                        <!-- ko if: isLocal -->
+                        <button type="button" class="btn btn-primary" data-bind="click: nextNumber">Next number</button>
+                        <!-- /ko -->
+                    </div>
+                </div>
+            </div>
         </script>
 
     <!--(if target dist)>

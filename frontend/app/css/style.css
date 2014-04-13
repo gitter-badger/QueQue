@@ -7252,3 +7252,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   background: #f0ad4e;
   border-color: #c77c11;
 }
+.queueNumber {
+  font-size: 15em;
+  font-weight: bold;
+}
+.form {
+  margin-top: 5em;
+}
+.ticket .ticketNumber {
+  font-style: italic;
+  display: inline-block;
+  margin: 5px;
+}
+.ticket .ticketPos {
+  display: inline-block;
+  margin: 5px;
+}
