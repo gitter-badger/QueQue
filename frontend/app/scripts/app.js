@@ -211,6 +211,8 @@
         })(this);
         this.init = (function(_this) {
           return function() {
+            console.log('qn', _this.queueNumber());
+            console.log(_this);
             _this.checkAccess();
             return _this.setUpRoutes();
           };

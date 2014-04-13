@@ -164,6 +164,8 @@ define [
                         return @router.defaultCheckFormSubmission(form)
 
             @init = () =>
+                console.log 'qn',@queueNumber()
+                console.log this
                 @checkAccess()
                 @setUpRoutes()
             @init()
