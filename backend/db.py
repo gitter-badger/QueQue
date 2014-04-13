@@ -88,9 +88,14 @@ while 1:
 
 			if 'number' in jData:
 				## == TODO:
-				## ==   When the user registers, send a web-request to XXX
+				## ==   When the user registers, send a web-request to XXX (can not find service)
 				## ==   which then calls the users phone with a spoofed 6-digit number
 				## ==   that should act as a 2-way-auth for verifying the identity of the user.
+
+				## == TODO:
+				## ==   Check if phone number is swedish, then check if available here: http://e-tjanster.pts.se/Documentation/API/NumberServiceWCF.aspx
+				## ==   If phone number available or other error, don't allow user to register in queue.
+				## == 	Display message to ask support for help if this happens.
 				nr = jData['number']
 				if nr in queue:
 					qPos = queue[nr]
