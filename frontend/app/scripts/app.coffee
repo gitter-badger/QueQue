@@ -102,6 +102,9 @@ define [
                             @queue data.queue
                             if @user.qpos() > 0 && data.queue > @user.qpos()
                                 @stopQueueMonitor()
+                        if data.length > 0
+                            for item in data
+                                @pastQueue.push item
                 },false)
             @getCurrentQueueMax = =>
                 console.log 'getCurrentQueueMax'

@@ -25,7 +25,7 @@
                         <div class="panel" data-bind="if: !ticket()">
                             <h2>Read Me</h2>
                             <p>Please enter a valid phone number where we can reach you, your phone number will be used to identify you once it is your turn.</p>
-                            <p>If you leave this page open once you have signed up for the queue it will auto refresh the queue position and notify you of progress. Keeping track of how many numbers are in front of you and who is being processed.</p>
+                            <p>If you leave this page open once you have signed up for the queue it will auto refresh the queue position and notify you of progress, keeping track of how many numbers are in front of you and who is being processed.</p>
                             <p>Typing in your number again while still in the queue will return the same queue number, if you forgot it or just want to reactivate the auto tracker. If you have been helped and type in your number again you will get a new number.</p>
                         </div>
 
@@ -37,8 +37,13 @@
                                 </div>
                                 <button class="btn btn-primary">Get your ticket</button>
                             </form>
+                        </div>
+                        <div class="form well">
                             <!-- ko if: Access -->
-                            <button type="button" class="btn btn-primary pull-right" data-bind="click: nextNumber">Next number</button>
+                            <ul data-bind="foreach: pastQueue">
+                                <li><span data-bind="html: qpos"></span> <span data-bind="html: number"></span></li>
+                            </ul>
+                            <button type="button" class="btn btn-primary" data-bind="click: nextNumber">Next number</button>
                             <!-- /ko -->
                         </div>
                     </div>

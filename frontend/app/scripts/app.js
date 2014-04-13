@@ -112,13 +112,23 @@
             console.log('getPastQueue');
             return _this.ajaxRequest({
               type: 'GET',
-              url: 'queue.php',
+              url: 'queue.php?history',
               callback: function(data) {
+                var item, _i, _len, _results;
+                console.log(data);
                 if (data.hasOwnProperty('queue')) {
                   _this.queue(data.queue);
                   if (_this.user.qpos() > 0 && data.queue > _this.user.qpos()) {
-                    return _this.stopQueueMonitor();
+                    _this.stopQueueMonitor();
                   }
+                }
+                if (data.length > 0) {
+                  _results = [];
+                  for (_i = 0, _len = data.length; _i < _len; _i++) {
+                    item = data[_i];
+                    _results.push(_this.pastQueue.push(item));
+                  }
+                  return _results;
                 }
               }
             }, false);
@@ -186,9 +196,11 @@
           return function() {
             _this.getCurrentQueue();
             _this.getCurrentQueueMax();
+            _this.getPastQueue();
             return _this.queueMonitor = setInterval(function() {
               _this.getCurrentQueue();
-              return _this.getCurrentQueueMax();
+              _this.getCurrentQueueMax();
+              return _this.getPastQueue();
             }, 30000);
           };
         })(this);
