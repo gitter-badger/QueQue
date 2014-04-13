@@ -103,6 +103,7 @@ define [
                             if @user.qpos() > 0 && data.queue > @user.qpos()
                                 @stopQueueMonitor()
                         if data.hasOwnProperty 'history'
+                            @pastQueue []
                             for item in data.history
                                 @pastQueue.push item
                 },false)
@@ -141,6 +142,7 @@ define [
                         if data.hasOwnProperty 'number'
                             @queueNumber data.number
                             $('#number-modal').modal()
+                        @getPastQueue()
                 },false)
 
             @stopQueueMonitor = () =>
@@ -183,8 +185,6 @@ define [
                         return @router.defaultCheckFormSubmission(form)
 
             @init = () =>
-                console.log 'qn',@queueNumber()
-                console.log this
                 @checkAccess()
                 @setUpRoutes()
             @init()

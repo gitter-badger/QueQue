@@ -66,6 +66,10 @@
                             <div class="queueNumber" data-bind="html: user.qpos() - queue()"></div>
                         </div>
                         <div class="panel" data-bind="if: !ticket()">
+                            <ul class="nav nav-tabs">
+                              <li class="active"><a href="#">Home</a></li>
+                              <li><a href="#">Profile</a></li>
+                            </ul>
                             <h2>Read Me</h2>
                             <p>Please enter a valid phone number where we can reach you, your phone number will be used to identify you once it is your turn.</p>
                             <p>If you leave this page open once you have signed up for the queue it will auto refresh the queue position and notify you of progress, keeping track of how many numbers are in front of you and who is being processed.</p>
@@ -83,10 +87,12 @@
                         </div>
                         <div class="form well">
                             <!-- ko if: Access -->
+                            <button type="button" class="btn btn-primary pull-right" data-bind="click: nextNumber">Next number</button>
+                            <h2>Queue</h2>
+                            <p>Latest numbers taken</p>
                             <ul data-bind="foreach: pastQueue">
                                 <li><span data-bind="html: qpos"></span> <span data-bind="html: number"></span></li>
                             </ul>
-                            <button type="button" class="btn btn-primary" data-bind="click: nextNumber">Next number</button>
                             <!-- /ko -->
                         </div>
                     </div>

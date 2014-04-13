@@ -69,7 +69,7 @@ module.exports = function(grunt) {
                     // 'app/components/bootstrap/js/tooltip.js',
                     // 'app/components/bootstrap/js/popover.js',
                     // 'app/components/bootstrap/js/scrollspy.js',
-                    // 'app/components/bootstrap/js/tab.js',
+                    'app/components/bootstrap/js/tab.js',
                     // 'app/components/bootstrap/js/affix.js'
 
                 ],

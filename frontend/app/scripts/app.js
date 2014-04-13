@@ -123,6 +123,7 @@
                   }
                 }
                 if (data.hasOwnProperty('history')) {
+                  _this.pastQueue([]);
                   _ref = data.history;
                   _results = [];
                   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -182,8 +183,9 @@
                 }
                 if (data.hasOwnProperty('number')) {
                   _this.queueNumber(data.number);
-                  return $('#number-modal').modal();
+                  $('#number-modal').modal();
                 }
+                return _this.getPastQueue();
               }
             }, false);
           };
@@ -234,8 +236,6 @@
         })(this);
         this.init = (function(_this) {
           return function() {
-            console.log('qn', _this.queueNumber());
-            console.log(_this);
             _this.checkAccess();
             return _this.setUpRoutes();
           };
