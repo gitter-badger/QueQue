@@ -2,14 +2,14 @@
 	require_once('./functions.php');
 	$handle = new db();
 
-	$do = 'current';
-	if ($_SERVER['REMOTE_ADDR'] == '127.0.0.1') {
-		if (isset($_GET['next']))
-			$do = 'next';
+	if (isset($_GET['next']) && strpos($handle->query('{"access" : "' . $_SERVER['REMOTE_ADDR'] . '"}'), 'true') !== false) {
+		$do = 'next';
 	} else if (isset($_GET['max'])) {
 		$do = 'max';
 	} else if (isset($_GET['access'])) {
 		$do = 'access';
+	} else {
+		$do = 'current';
 	}
 
 	if ($do == 'access')

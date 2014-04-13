@@ -3,6 +3,10 @@ from time import time
 from socket import *
 from json import loads, dumps
 
+## == -- Requirements
+## == *Nix OS that supports `Epoll`
+## == Python2+ (3+ preferred)
+
 sockets = {}
 access_list = ['127.0.0.1', '83.253.236.108']
 watch = select.epoll()
@@ -94,9 +98,7 @@ while 1:
 				history[qPos] = nr
 				sockets[fd]['sock'].send(bytes(dumps({"number" : nr, "qpos" : qPos}), 'UTF-8'))
 			elif 'queue' in jData:
-				#if jData['queue'] == 'current':
-				#	sockets[fd]['sock'].send(bytes(dumps({"queue" : queue['current']}), 'UTF-8'))
-				if jData['queue'] == 'next' and sockets[fd]['addr'] == '127.0.0.1':
+				if jData['queue'] == 'next' and sockets[fd]['addr'] in access_list:
 					if queue['current'] + 1 < nextQnum():
 						queue['current'] += 1
 					sockets[fd]['sock'].send(bytes(dumps({"queue" : queue['current'], "number" : history[queue['current']]}), 'UTF-8'))
@@ -110,10 +112,12 @@ while 1:
 				else:
 					sockets[fd]['sock'].send(bytes(dumps({"access" : False}), 'UTF-8'))
 
+			# We'll close and remove each socket after we've parsed and returned data.
+			# Mainly because the PHP page is session-based 
 			watch.unregister(sockets[fd]['sock'].fileno())
 			sockets[fd]['sock'].close()
 			del sockets[fd]
-			continue
+
 	if time() - last_save > 5:
 		saveDBs()
 		last_save = time()
