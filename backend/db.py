@@ -104,6 +104,101 @@ def nextQnum():
 	else:
 		return 0
 
+class dataObject():
+	def __init__(self, data, sendHandle, sockAddr):
+		self.data = data
+		self.send = sendHandle
+		self.addr = sockAddr
+
+		returndata = self.parse()
+		self.send(bytes(dumps(returndata), 'UTF-8'))
+
+	def number(self):
+		## == TODO:
+		## ==   When the user registers, send a web-request to XXX (can not find service)
+		## ==   which then calls the users phone with a spoofed 6-digit number
+		## ==   that should act as a 2-way-auth for verifying the identity of the user.
+
+		## == TODO:
+		## ==   Check if phone number is swedish, then check if available here: http://e-tjanster.pts.se/Documentation/API/NumberServiceWCF.aspx
+		## ==   If phone number available or other error, don't allow user to register in queue.
+		## == 	Display message to ask support for help if this happens.
+
+		## == TODO:
+		## ==   Verify phone-numbers and make sure that they are:
+		## ==   +46[0-9]{9}  - Country-code specific for sweden
+		## ==   07[0-9]{8}    - Traditional 073... numbers
+		## ==   +[0-9]{1,15} - Other country-code specific numbers with unknown max length
+		nr = self.data['number']
+		if nr in queue:
+			qPos = queue[nr]
+			if qPos < queue['current']:
+				qPos = nextQnum()
+				queue[nr] = qPos
+		else:
+			qPos = nextQnum()
+			queue[nr] = qPos
+
+		history[qPos] = nr
+		return {"number" : nr, "qpos" : qPos}
+
+	def queue(self):
+		## == A set of access-restricted features follows below
+		if self.data['queue'] == 'next' and self.addr in access_list:
+			if queue['current'] + 1 < nextQnum():
+				queue['current'] += 1
+			return {"queue" : queue['current'], "number" : history[queue['current']]}
+
+		elif self.data['queue'] == 'upcoming' and self.addr in access_list:
+			returnList = []
+			for index in range(0, 10):
+				if queue['current']+index in history:
+					if index == 0:
+						returnList.append({"number" : history[queue['current']+index], "qpos" : queue['current']+index, 'current' : True})
+					else:
+						returnList.append({"number" : history[queue['current']+index], "qpos" : queue['current']+index, 'current' : False})
+			return {"upcoming" : returnList, "order" : "ascending"}
+
+		elif self.data['queue'] == 'history' and sockets[fd]['addr'] in access_list:
+			offset = 0
+			if 'parameters' in self.data and 'offset' in self.data['parameters']:
+				try:
+					offset = int(self.data['parameters']['offset'])
+				except ValueError:
+					pass
+
+			returnList = []
+			for index in range(0+offset, 10+offset):
+				if queue['current']-index in history:
+					returnList.append({"number" : history[queue['current']-index], "qpos" : queue['current']-index})
+			return {"offset" : offset, "history" : returnList, "order" : "reversed"}
+
+		## == A set of open queries follows below:
+		## == consider splitting these up into different function-checks.
+		## == As of now, you can't check `in access_list` and separate
+		## == the functions into a separate if block because then
+		## == access-granted people won't be able to access the below features.
+		elif self.data['queue'] == 'max':
+			return {"queue" : nextQnum()-1}
+		
+		return {"queue" : queue['current']}
+
+	def access(self):
+		if self.data['access'] in access_list:
+			return {"access" : True}
+		return {"access" : False}
+
+	def parse(self):
+		self.data = loads(self.data.decode('utf-8'))
+		print(self.addr,'asked:',self.data)
+			
+		if 'number' in self.data:
+			return self.number()
+		elif 'queue' in self.data:
+			return self.queue()
+		elif 'access' in self.data:
+			return self.access()
+
 queue, history = loadDBs()
 last_save = time()
 while 1:
@@ -118,80 +213,8 @@ while 1:
 				watch.unregister(sockets[fd]['sock'].fileno())
 				del sockets[fd]
 				continue
-			jData = loads(data.decode('utf-8'))
-			
-			print(sockets[fd]['addr'],'asked:',jData)
 
-			if 'number' in jData:
-				## == TODO:
-				## ==   When the user registers, send a web-request to XXX (can not find service)
-				## ==   which then calls the users phone with a spoofed 6-digit number
-				## ==   that should act as a 2-way-auth for verifying the identity of the user.
-
-				## == TODO:
-				## ==   Check if phone number is swedish, then check if available here: http://e-tjanster.pts.se/Documentation/API/NumberServiceWCF.aspx
-				## ==   If phone number available or other error, don't allow user to register in queue.
-				## == 	Display message to ask support for help if this happens.
-
-				## == TODO:
-				## ==   Verify phone-numbers and make sure that they are:
-				## ==   +46[0-9]{9}  - Country-code specific for sweden
-				## ==   07[0-9]{8}    - Traditional 073... numbers
-				## ==   +[0-9]{1,15} - Other country-code specific numbers with unknown max length
-				nr = jData['number']
-				if nr in queue:
-					qPos = queue[nr]
-					if qPos < queue['current']:
-						qPos = nextQnum()
-						queue[nr] = qPos
-				else:
-					qPos = nextQnum()
-					queue[nr] = qPos
-
-				history[qPos] = nr
-				sockets[fd]['sock'].send(bytes(dumps({"number" : nr, "qpos" : qPos}), 'UTF-8'))
-			elif 'queue' in jData:
-				## == A set of access-restricted features follows below
-				if jData['queue'] == 'next' and sockets[fd]['addr'] in access_list:
-					if queue['current'] + 1 < nextQnum():
-						queue['current'] += 1
-					sockets[fd]['sock'].send(bytes(dumps({"queue" : queue['current'], "number" : history[queue['current']]}), 'UTF-8'))
-				elif jData['queue'] == 'upcomming' and sockets[fd]['addr'] in access_list:
-					returnList = []
-					for index in range(0, 10):
-						if queue['current']+index in history:
-							if index == 0:
-								returnList.append({"number" : history[queue['current']+index], "qpos" : queue['current']+index, 'current' : True})
-							else:
-								returnList.append({"number" : history[queue['current']+index], "qpos" : queue['current']+index, 'current' : False})
-					sockets[fd]['sock'].send(bytes(dumps({"upcomming" : returnList, "order" : "ascending"}), 'UTF-8'))
-				elif jData['queue'] == 'history' and sockets[fd]['addr'] in access_list:
-					if 'parameters' in jData and 'offset' in jData['parameters']:
-						try:
-							offset = int(jData['parameters']['offset'])
-						except ValueError:
-							offset = 0
-					else:
-						offset = 0
-					returnList = []
-					for index in range(0+offset, 10+offset):
-						if queue['current']-index in history:
-							returnList.append({"number" : history[queue['current']-index], "qpos" : queue['current']-index})
-					sockets[fd]['sock'].send(bytes(dumps({"offset" : offset, "history" : returnList, "order" : "reversed"}), 'UTF-8'))
-				## == A set of open queries follows below:
-				## == consider splitting these up into different function-checks.
-				## == As of now, you can't check `in access_list` and separate
-				## == the functions into a separate if block because then
-				## == access-granted people won't be able to access the below features.
-				elif jData['queue'] == 'max':
-					sockets[fd]['sock'].send(bytes(dumps({"queue" : nextQnum()-1}), 'UTF-8'))
-				else:
-					sockets[fd]['sock'].send(bytes(dumps({"queue" : queue['current']}), 'UTF-8'))
-			elif 'access' in jData:
-				if jData['access'] in access_list:
-					sockets[fd]['sock'].send(bytes(dumps({"access" : True}), 'UTF-8'))
-				else:
-					sockets[fd]['sock'].send(bytes(dumps({"access" : False}), 'UTF-8'))
+			container = dataObject(data, sockets[fd]['sock'].send, sockets[fd]['addr'])
 
 			# We'll close and remove each socket after we've parsed and returned data.
 			# Mainly because the PHP page is session-based 
