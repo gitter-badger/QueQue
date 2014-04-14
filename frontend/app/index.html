@@ -92,16 +92,16 @@
                                 <button class="btn btn-primary">Get your ticket</button>
                             </form>
                         </div>
+                        <!-- ko if: Access -->
                         <div class="form well">
-                            <!-- ko if: Access -->
                             <button type="button" class="btn btn-primary pull-right" data-bind="click: nextNumber">Next number</button>
                             <h2>Queue</h2>
                             <p>Latest numbers taken</p>
                             <ul data-bind="foreach: pastQueue">
                                 <li><span data-bind="html: qpos"></span> <span data-bind="html: number"></span></li>
                             </ul>
-                            <!-- /ko -->
                         </div>
+                        <!-- /ko -->
                     </div>
                 </div>
             </div>
