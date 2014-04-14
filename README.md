@@ -1,7 +1,35 @@
 QueQue
 ======
 
-A que managment system built for for DreamHack Support
+A que managment system built for DreamHack Support booth
 
+Demo
+------
+URL to GUI demo: http://109.124.175.121/QueQue/frontend/dist/
 
-URL: http://109.124.175.121/QueQue/
+Features
+------
+### Features for end users
+* Show current queue position
+* Show current number of qued numbers
+* Get ticket by entering phone number
+* Live update of queue data
+* Notification of when it's your turn
+* Notification of when your turn has passed
+
+### Features for admins
+* Go to next in queue
+* See past accepted queue history
+* See upcoming queue
+
+Future
+------
+
+### Verifiction
+* By SMS
+* By Phone
+* By Email 
+
+### Multiple screens
+* Admin screen with only admin part
+* Only show current queue position
