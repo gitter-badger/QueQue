@@ -160,7 +160,10 @@ while 1:
 					returnList = []
 					for index in range(0, 10):
 						if queue['current']+index in history:
-							returnList.append({"number" : history[queue['current']+index], "qpos" : queue['current']+index})
+							if index == 0:
+								returnList.append({"number" : history[queue['current']+index], "qpos" : queue['current']+index, 'current' : True})
+							else:
+								returnList.append({"number" : history[queue['current']+index], "qpos" : queue['current']+index, 'current' : False})
 					sockets[fd]['sock'].send(bytes(dumps({"upcomming" : returnList, "order" : "ascending"}), 'UTF-8'))
 				elif jData['queue'] == 'history' and sockets[fd]['addr'] in access_list:
 					if 'parameters' in jData and 'offset' in jData['parameters']:
