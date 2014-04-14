@@ -3,14 +3,17 @@
 	$handle = new db();
 
 	$parameters = '{}';
-	// if 'next' is given, we can also query the backend for access permissions.
-	// the access is also verified in the backend but i'll leave the function here as an example.
+
+	// The access to certain functions is verified in the backend for the connecting socket,
+	// there for we have the obligation to verify the client's ip against the access pool before
+	// querying the backend for 'next' and 'history' since the PHP is a middle-man twoards the backend.
+	// 
 	if (isset($_GET['next']) && strpos($handle->query('{"access" : "' . $_SERVER['REMOTE_ADDR'] . '"}'), 'true') !== false) {
 		$do = 'next';
 	} else if (isset($_GET['max'])) {
 		// max returns the highest queue number (the last number in the ticket system)
 		$do = 'max';
-	} else if (isset($_GET['history'])) {
+	} else if (isset($_GET['history']) && strpos($handle->query('{"access" : "' . $_SERVER['REMOTE_ADDR'] . '"}'), 'true') !== false) {
 		// History returns the the last 10 items of the ticket system
 		// unless a offset is given, then it's position -10+offset that's retrieved.
 		$do = 'history';
@@ -25,6 +28,8 @@
 		// == either rework the query system of queue.php or move this one
 		// == particular function into it's own atmosphere. 
 		$data = $handle->query('{"access" : "' . $_SERVER['REMOTE_ADDR'] . '"}');
+	} else {
+		$do = 'current';
 	}
 
 	if (isset($do))
