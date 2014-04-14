@@ -13,7 +13,7 @@ sockets = {}
 ## == The access list defines which IP's (either socket or IP in jsondata)
 ## == has access to certain features
 ## (TODO: if jsondata, make sure it comes from the webserver!!!)
-access_list = ['127.0.0.1', '83.253.236.108']
+access_list = ['127.0.0.1', '83.253.236.108', '94.234.170.79']
 
 ## == Watch is a object (requires *Nix) that can be used to register/unregister
 ## == socket filedescriptors, this object is also used to
@@ -37,14 +37,14 @@ def saveDBs():
 	opening and dumping queue and history into
 	their respective .pic files.
 	"""
-	if os.path.isfile('history.pic'):
-		os.rename('history.pic', 'history.bkp')
-	if os.path.isfile('queue.pic'):
-		os.rename('queue.pic', 'queue.bkp')
+	if os.path.isfile('./data/history.pic'):
+		os.rename('./data/history.pic', './data/history.bkp')
+	if os.path.isfile('./data/queue.pic'):
+		os.rename('./data/queue.pic', './data/queue.bkp')
 
-	with open('history.pic', 'wb') as fh:
+	with open('./data/history.pic', 'wb') as fh:
 		pickle.dump(history, fh)
-	with open('queue.pic', 'wb') as fh:
+	with open('./data/queue.pic', 'wb') as fh:
 		pickle.dump(queue, fh)
 
 def loadDBs():
@@ -62,16 +62,16 @@ def loadDBs():
 	If there is a .pic but it's broken
 	a backup-check is also initated.
 	"""
-	if os.path.isfile('history.pic'):
-		with open('history.pic', 'rb') as fh:
+	if os.path.isfile('./data/history.pic'):
+		with open('./data/history.pic', 'rb') as fh:
 			try:
 				history = pickle.load(fh)
 			except EOFError:
 				history = None
 	else:
 		history = None
-	if os.path.isfile('queue.pic'):
-		with open('queue.pic', 'rb') as fh:
+	if os.path.isfile('./data/queue.pic'):
+		with open('./data/queue.pic', 'rb') as fh:
 			try:
 				queue = pickle.load(fh)
 			except EOFError:
@@ -80,13 +80,13 @@ def loadDBs():
 		queue = None
 	
 	if queue is None:
-		if os.path.isfile('queue.bkp'):
-			os.rename('queue.bkp', 'queue.pic')
+		if os.path.isfile('./data/queue.bkp'):
+			os.rename('./data/queue.bkp', './data/queue.pic')
 		else:
 			queue = {'current' : 0}
 	if history is None:
-		if os.path.isfile('history.bkp'):
-			os.rename('history.bkp', 'history.pic')
+		if os.path.isfile('./data/history.bkp'):
+			os.rename('./data/history.bkp', './data/history.pic')
 		else:
 			history = {}
 
@@ -166,7 +166,7 @@ while 1:
 					returnList = []
 					for index in range(0+offset, 10+offset):
 						if queue['current']-index in history:
-							returnList.append(history[queue['current']-index])
+							returnList.append({"number" : history[queue['current']-index], "qpos" : queue['current']-index})
 					sockets[fd]['sock'].send(bytes(dumps({"offset" : offset, "history" : returnList, "order" : "reversed"}), 'UTF-8'))
 				elif jData['queue'] == 'max':
 					sockets[fd]['sock'].send(bytes(dumps({"queue" : nextQnum()-1}), 'UTF-8'))
