@@ -19,6 +19,10 @@
 		$do = 'history';
 		if (isset($_GET['offset']))
 			$parameters = '{"offset" : "' . $_GET['offset'] . '"}';
+	} else if (isset($_GET['upcomming']) && strpos($handle->query('{"access" : "' . $_SERVER['REMOTE_ADDR'] . '"}'), 'true') !== false) {
+		// upcomming returns the upcomming 10 items in the queue,
+		// this is for when clients come in and say "hey, am i next in queue"
+		$do = 'upcomming';
 	} else if (isset($_GET['access'])) {
 		// == Access checks weither or not the client IP has
 		// == access to modify/manipulate the ticket system.

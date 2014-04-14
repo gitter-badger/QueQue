@@ -151,10 +151,17 @@ while 1:
 				history[qPos] = nr
 				sockets[fd]['sock'].send(bytes(dumps({"number" : nr, "qpos" : qPos}), 'UTF-8'))
 			elif 'queue' in jData:
+				## == A set of access-restricted features follows below
 				if jData['queue'] == 'next' and sockets[fd]['addr'] in access_list:
 					if queue['current'] + 1 < nextQnum():
 						queue['current'] += 1
 					sockets[fd]['sock'].send(bytes(dumps({"queue" : queue['current'], "number" : history[queue['current']]}), 'UTF-8'))
+				elif jData['queue'] == 'upcomming' and sockets[fd]['addr'] in access_list:
+					returnList = []
+					for index in range(0, 10):
+						if queue['current']+index in history:
+							returnList.append({"number" : history[queue['current']+index], "qpos" : queue['current']+index})
+					sockets[fd]['sock'].send(bytes(dumps({"upcomming" : returnList, "order" : "ascending"}), 'UTF-8'))
 				elif jData['queue'] == 'history' and sockets[fd]['addr'] in access_list:
 					if 'parameters' in jData and 'offset' in jData['parameters']:
 						try:
@@ -168,6 +175,11 @@ while 1:
 						if queue['current']-index in history:
 							returnList.append({"number" : history[queue['current']-index], "qpos" : queue['current']-index})
 					sockets[fd]['sock'].send(bytes(dumps({"offset" : offset, "history" : returnList, "order" : "reversed"}), 'UTF-8'))
+				## == A set of open queries follows below:
+				## == consider splitting these up into different function-checks.
+				## == As of now, you can't check `in access_list` and separate
+				## == the functions into a separate if block because then
+				## == access-granted people won't be able to access the below features.
 				elif jData['queue'] == 'max':
 					sockets[fd]['sock'].send(bytes(dumps({"queue" : nextQnum()-1}), 'UTF-8'))
 				else:
