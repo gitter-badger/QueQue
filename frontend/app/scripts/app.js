@@ -21,7 +21,7 @@
         };
         this.user = {
           number: ko.observable(null),
-          qpos: ko.observable(0)
+          qpos: ko.observable(-1)
         };
         this.ticket = ko.observable(false);
         this.queue = ko.observable(0);
@@ -48,6 +48,20 @@
             return _results;
           };
         })(this));
+        this.tabs = ko.observableArray([
+          {
+            id: "en",
+            menu: "English",
+            title: "Read Me",
+            content: "<p>Please enter a valid phone number where we can reach you, your phone number will be used to identify you once it is your turn.</p> <p>If you leave this page open once you have signed up for the queue it will auto refresh the queue position and notify you of progress, keeping track of how many numbers are in front of you and who is being processed.</p> <p>Typing in your number again while still in the queue will return the same queue number, if you forgot it or just want to reactivate the auto tracker. If you have been helped and type in your number again you will get a new number.</p>"
+          }, {
+            id: "sv",
+            menu: "Svenska",
+            title: "Läs Mig",
+            content: "<p>Fyll i ett telefonnummer som vi kan få tag i dig på för att få en kölapp, det kommer att användas för att identifiera dig när det är din tur.</p> <p>Om du lämnar den här sidan öppen när du skrivit upp dif så kommer den automatiskt uppdateras med köstatus.</p> <p>Skriver du in samma telefonnummer igen kommer du att få samma kölapp om ditt nummer inte har passerat, på så sätt kan du få fram vilken kölapp du har även efter att ha stängt fönstret. Har din kölapp redan passerats och du skriver in ditt telefonnummer igen så får du en ny kölapp.</p>"
+          }
+        ]);
+        this.selectedTab = ko.observable();
         this.Access = ko.observable(false);
         this.checkAccess = (function(_this) {
           return function() {
@@ -164,6 +178,7 @@
               callback: function(data) {
                 console.log(data);
                 if (data.hasOwnProperty('qpos')) {
+                  _this.user.number(null);
                   _this.user.qpos(data.qpos);
                 }
                 return _this.ticket(true);
@@ -237,7 +252,8 @@
         this.init = (function(_this) {
           return function() {
             _this.checkAccess();
-            return _this.setUpRoutes();
+            _this.setUpRoutes();
+            return _this.selectedTab(_this.tabs()[0]);
           };
         })(this);
         this.init();
