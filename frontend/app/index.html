@@ -36,17 +36,17 @@
         </div>
     </script>
 
-    <div class="container">
-        <h1>QueQue ticket system</h1>
-    </div>
-
-    <div data-bind="template: { name: 'error-well', data: messages }"></div>
     <div class="container" data-bind="template: { name: currentPage }">
     </div>
 
         <script type="text/html" id="queue">
-            <div class="yourTurn" data-bind="visible: queue() == user.qpos()">It&#8216;s your turn!</div>
-            <div class="yourTurn passed" data-bind="visible: user.qpos() > 0 && queue() > user.qpos()">Your turn has passed!</div>
+            <div class="container">
+                <h1>QueQue ticket system</h1>
+            </div>
+
+            <div data-bind="template: { name: 'error-well', data: messages }"></div>
+            <div class="yourTurn" data-bind="visible: user.qpos() != -1 && queue() == user.qpos()">It&#8216;s your turn!</div>
+            <div class="yourTurn passed" data-bind="visible: user.qpos() != -1 && queue() > user.qpos()">Your turn has passed!</div>
             <div data-bind="template: {name: 'number-modal-template', if: queueNumber}"></div>
             <div class="row">
                 <div class="col-md-6">
@@ -123,6 +123,75 @@
             </div><!-- /.modal -->
         </script>
 
+
+        <script type="text/html" id="admin">
+            <div class="container">
+                <h1>QueQue ticket system — Admin</h1>
+            </div>
+
+            <div class="modal fade">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Modal title</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p>One fine body&hellip;</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                  </div>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+
+
+            <div data-bind="template: { name: 'error-well', data: messages }"></div>
+            <div class="yourTurn" data-bind="visible: user.qpos() != -1 && queue() == user.qpos()">It&#8216;s your turn!</div>
+            <div class="yourTurn passed" data-bind="visible: user.qpos() != -1 && queue() > user.qpos()">Your turn has passed!</div>
+            <div data-bind="template: {name: 'number-modal-template', if: queueNumber}"></div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info">
+                        <div class="label">Processing</div>
+                        <div class="queueNumber" data-bind="html: '#'+queue()"></div>
+                        <div class="label">In queue</div>
+                        <div class="queueNumber" data-bind="html: queueMax() - queue()"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info">
+                        <div class="ticket" data-bind="if: ticket">
+                            <span class="label">Your ticket number is</span>
+                            <div class="ticketPos " data-bind="html: user.qpos"></div>
+                            <span class="label">Numbers until your turn</span>
+                            <div class="" data-bind="html: user.qpos() - queue()"></div>
+                        </div>
+                        <div class="form well">
+
+                            <form data-bind="submit: getTicket">
+                                <div class="form-group">
+                                    <input placeholder="+4670000000" id="number" name="number" data-bind="value: user.number" type="text" class="form-control">
+                                </div>
+                                <button class="btn btn-primary">Get your ticket</button>
+                            </form>
+                        </div>
+                        <!-- ko if: Access -->
+                        <div class="form well">
+                            <button type="button" class="btn btn-primary pull-right" data-bind="click: nextNumber">Next number</button>
+                            <h2>Queue</h2>
+                            <p>Latest numbers taken</p>
+                            <ul data-bind="foreach: pastQueue">
+                                <li><span data-bind="html: qpos"></span> <span data-bind="html: number"></span></li>
+                            </ul>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+            </div>
+        </script>
     <!--(if target dist)>
     <script data-main="js/main" src="js/require.js"></script>
     <!(endif)-->

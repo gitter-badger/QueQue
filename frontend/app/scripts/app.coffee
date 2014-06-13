@@ -9,7 +9,7 @@ define [
 ], ($, ko, _, sammy) ->
     class QueQue
         options: {
-            API: "http://109.124.175.121/QueQue/backend/"
+            API: "http://b.hvornum.se/"
         }
         constructor: ->
             console.log 'start app'
@@ -26,9 +26,12 @@ define [
                 number: ko.observable null
                 qpos: ko.observable -1
             }
+            @login = {
+                password: ko.observable null
+            }
             @ticket = ko.observable false
 
-            @queue = ko.observable 0
+            @queue = ko.observable -1
             @pastQueue = ko.observableArray []
             @queueMonitor = false
             @queueNumber = ko.observable -1
@@ -65,7 +68,7 @@ define [
             @selectedTab = ko.observable()
 
             @Access = ko.observable false
-            @checkAccess = =>
+            @checkAccess = (callback) =>
                 console.log 'checkAccess'
                 @ajaxRequest({
                     type: 'GET'
@@ -73,7 +76,28 @@ define [
                     callback: (data) =>
                         if data.hasOwnProperty 'access'
                             @Access data.access
+                            if data.access == true
+                                callback()
+                            else{
+                                @logout()
+                            }
+                            
                 },false)
+            @logout = =>
+                console.log 'logout'
+                @ajaxRequest({
+                    type: 'GET'
+                    url: 'queue.php?login'
+                    callback: (data) =>
+                },false)
+            @login = =>
+                console.log 'login'
+                login = ko.toJS(@login)
+                @ajaxRequest({
+                    type: 'GET'
+                    url: 'queue.php?login'
+                    callback: (data) =>
+                },login)
 
             @closeModal = ->
                 $('.modal').modal('hide')
@@ -186,6 +210,9 @@ define [
                     context.get '#/', =>
                         @startQueueMonitor()
                         @currentPage "queue"
+                    context.get '#/admin', =>
+                        @checkAccess @startQueueMonitor()
+                        @currentPage "admin"
 
                     #Handle empty hash, e.g user uses back button on first "page"
                     context.get /([^]*)/, =>

@@ -3,7 +3,7 @@
     var QueQue;
     QueQue = (function() {
       QueQue.prototype.options = {
-        API: "http://109.124.175.121/QueQue/backend/"
+        API: "http://b.hvornum.se/"
       };
 
       function QueQue() {
@@ -24,7 +24,7 @@
           qpos: ko.observable(-1)
         };
         this.ticket = ko.observable(false);
-        this.queue = ko.observable(0);
+        this.queue = ko.observable(-1);
         this.pastQueue = ko.observableArray([]);
         this.queueMonitor = false;
         this.queueNumber = ko.observable(-1);
@@ -64,14 +64,17 @@
         this.selectedTab = ko.observable();
         this.Access = ko.observable(false);
         this.checkAccess = (function(_this) {
-          return function() {
+          return function(callback) {
             console.log('checkAccess');
             return _this.ajaxRequest({
               type: 'GET',
               url: 'queue.php?access',
               callback: function(data) {
                 if (data.hasOwnProperty('access')) {
-                  return _this.Access(data.access);
+                  _this.Access(data.access);
+                  if (data.access === true) {
+                    return callback();
+                  }
                 }
               }
             }, false);
@@ -228,6 +231,10 @@
               context.get('#/', function() {
                 _this.startQueueMonitor();
                 return _this.currentPage("queue");
+              });
+              context.get('#/admin', function() {
+                _this.checkAccess(_this.startQueueMonitor());
+                return _this.currentPage("admin");
               });
               return context.get(/([^]*)/, function() {
                 if (context.path === '/') {
