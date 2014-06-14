@@ -26,12 +26,22 @@ define [
                 number: ko.observable null
                 qpos: ko.observable -1
             }
-            @login = {
+            @auth = {
                 password: ko.observable null
+                authenticated: ko.observable false
             }
+            # @auth.authenticated.subscribe (authenticated) =>
+            #     if authenticated
+            #         @startQueueMonitor()
+            #         @adminQueueMonitor()
+
             @ticket = ko.observable false
 
+            @menuItems = ko.observableArray [
+                {group: "left", path: "#/admin", requireAdmin: true, name: "ADMIN", handle: "admin", active: ko.observable false}
+            ]
             @queue = ko.observable -1
+            @upcomingQueue = ko.observableArray []
             @pastQueue = ko.observableArray []
             @queueMonitor = false
             @queueNumber = ko.observable -1
@@ -39,7 +49,6 @@ define [
             @currentPage = ko.observable "queue"
             console.log 'qn=', @queueNumber()
             @currentPage.subscribe (currentPage) =>
-                console.log currentPage
                 menu = @menuItems()
                 for item in menu
                     if currentPage == item.handle
@@ -77,27 +86,36 @@ define [
                         if data.hasOwnProperty 'access'
                             @Access data.access
                             if data.access == true
-                                callback()
-                            else{
+                                if typeof callback == 'function'
+                                    callback()
+                            else
                                 @logout()
-                            }
-                            
                 },false)
             @logout = =>
                 console.log 'logout'
                 @ajaxRequest({
                     type: 'GET'
                     url: 'queue.php?login'
-                    callback: (data) =>
                 },false)
+                $('#login-modal').modal({backdrop: 'static'})
             @login = =>
                 console.log 'login'
-                login = ko.toJS(@login)
+                authen = ko.toJS(@auth)
+                reqData = {'login': authen.password}
                 @ajaxRequest({
                     type: 'GET'
-                    url: 'queue.php?login'
+                    url: 'queue.php'
                     callback: (data) =>
-                },login)
+                        console.log data
+                        if data.status == "OK"
+                            @auth.authenticated true
+                            @adminQueueMonitor()
+                            $('#login-modal').modal('hide')
+                        # else
+                        #     @auth.authenticated false
+                        #     @stopQueueMonitor()
+                        #     @logout()
+                },reqData)
 
             @closeModal = ->
                 $('.modal').modal('hide')
@@ -106,12 +124,16 @@ define [
 
             @ajaxRequest = (options, data) =>
                 @loading.push('ajax')
-                headers = $.extend({}, options.headers)
+                # headers = $.extend({}, options.headers)
+                $.support.cors = true
                 $.ajax({
                     type: options.type
                     url: this.options.API + options.url
                     dataType: 'json'
                     data: data
+                    # xhrFields:
+                    #     withCredentials: true
+
                     complete: (data) =>
                         @loading.pop()
                     success: options.callback
@@ -122,7 +144,7 @@ define [
                                 # @messages.push({error: 0, error_description: e.responseJSON.message})
                         console.log e
                         @loading.pop()
-                    headers: headers
+                    # headers: headers
                 })
 
             @getCurrentQueue = =>
@@ -151,6 +173,22 @@ define [
                             @pastQueue []
                             for item in data.history
                                 @pastQueue.push item
+                },false)
+            @getUpcomingQueue = =>
+                console.log 'getUpcomingQueue'
+                @ajaxRequest({
+                    type: 'GET'
+                    url: 'queue.php?upcoming'
+                    callback: (data) =>
+                        console.log data
+                        if data.hasOwnProperty 'queue'
+                            @queue data.queue
+                            if @user.qpos() > 0 && data.queue > @user.qpos()
+                                @stopQueueMonitor()
+                        if data.hasOwnProperty 'upcoming'
+                            @upcomingQueue []
+                            for item in data.history
+                                @upcomingQueue.push item
                 },false)
             @getCurrentQueueMax = =>
                 console.log 'getCurrentQueueMax'
@@ -194,15 +232,25 @@ define [
             @stopQueueMonitor = () =>
                 clearInterval @queueMonitor
             @startQueueMonitor = () =>
+                @stopQueueMonitor()
                 @getCurrentQueue()
                 @getCurrentQueueMax()
+                @queueMonitor = setInterval( =>
+                    @getCurrentQueue()
+                    @getCurrentQueueMax()
+                ,30000)
+            @adminQueueMonitor = () =>
+                @stopQueueMonitor()
+                @getCurrentQueue()
+                @getCurrentQueueMax()
+                @getUpcomingQueue()
                 @getPastQueue()
                 @queueMonitor = setInterval( =>
                     @getCurrentQueue()
                     @getCurrentQueueMax()
+                    @getUpcomingQueue()
                     @getPastQueue()
                 ,30000)
-
 
             @setUpRoutes = () =>
                 @router = sammy( (context) =>
@@ -211,7 +259,7 @@ define [
                         @startQueueMonitor()
                         @currentPage "queue"
                     context.get '#/admin', =>
-                        @checkAccess @startQueueMonitor()
+                        @checkAccess @adminQueueMonitor
                         @currentPage "admin"
 
                     #Handle empty hash, e.g user uses back button on first "page"
@@ -234,7 +282,7 @@ define [
                         return @router.defaultCheckFormSubmission(form)
 
             @init = () =>
-                @checkAccess()
+                # @checkAccess()
                 @setUpRoutes()
                 @selectedTab(@tabs()[0]);
             @init()

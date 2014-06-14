@@ -23,8 +23,23 @@
           number: ko.observable(null),
           qpos: ko.observable(-1)
         };
+        this.auth = {
+          password: ko.observable(null),
+          authenticated: ko.observable(false)
+        };
         this.ticket = ko.observable(false);
+        this.menuItems = ko.observableArray([
+          {
+            group: "left",
+            path: "#/admin",
+            requireAdmin: true,
+            name: "ADMIN",
+            handle: "admin",
+            active: ko.observable(false)
+          }
+        ]);
         this.queue = ko.observable(-1);
+        this.upcomingQueue = ko.observableArray([]);
         this.pastQueue = ko.observableArray([]);
         this.queueMonitor = false;
         this.queueNumber = ko.observable(-1);
@@ -34,7 +49,6 @@
         this.currentPage.subscribe((function(_this) {
           return function(currentPage) {
             var item, menu, _i, _len, _results;
-            console.log(currentPage);
             menu = _this.menuItems();
             _results = [];
             for (_i = 0, _len = menu.length; _i < _len; _i++) {
@@ -73,11 +87,49 @@
                 if (data.hasOwnProperty('access')) {
                   _this.Access(data.access);
                   if (data.access === true) {
-                    return callback();
+                    if (typeof callback === 'function') {
+                      return callback();
+                    }
+                  } else {
+                    return _this.logout();
                   }
                 }
               }
             }, false);
+          };
+        })(this);
+        this.logout = (function(_this) {
+          return function() {
+            console.log('logout');
+            _this.ajaxRequest({
+              type: 'GET',
+              url: 'queue.php?login'
+            }, false);
+            return $('#login-modal').modal({
+              backdrop: 'static'
+            });
+          };
+        })(this);
+        this.login = (function(_this) {
+          return function() {
+            var authen, reqData;
+            console.log('login');
+            authen = ko.toJS(_this.auth);
+            reqData = {
+              'login': authen.password
+            };
+            return _this.ajaxRequest({
+              type: 'GET',
+              url: 'queue.php',
+              callback: function(data) {
+                console.log(data);
+                if (data.status === "OK") {
+                  _this.auth.authenticated(true);
+                  _this.adminQueueMonitor();
+                  return $('#login-modal').modal('hide');
+                }
+              }
+            }, reqData);
           };
         })(this);
         this.closeModal = function() {
@@ -87,9 +139,8 @@
         };
         this.ajaxRequest = (function(_this) {
           return function(options, data) {
-            var headers;
             _this.loading.push('ajax');
-            headers = $.extend({}, options.headers);
+            $.support.cors = true;
             return $.ajax({
               type: options.type,
               url: _this.options.API + options.url,
@@ -102,8 +153,7 @@
               error: function(e) {
                 console.log(e);
                 return _this.loading.pop();
-              },
-              headers: headers
+              }
             });
           };
         })(this);
@@ -146,6 +196,35 @@
                   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                     item = _ref[_i];
                     _results.push(_this.pastQueue.push(item));
+                  }
+                  return _results;
+                }
+              }
+            }, false);
+          };
+        })(this);
+        this.getUpcomingQueue = (function(_this) {
+          return function() {
+            console.log('getUpcomingQueue');
+            return _this.ajaxRequest({
+              type: 'GET',
+              url: 'queue.php?upcoming',
+              callback: function(data) {
+                var item, _i, _len, _ref, _results;
+                console.log(data);
+                if (data.hasOwnProperty('queue')) {
+                  _this.queue(data.queue);
+                  if (_this.user.qpos() > 0 && data.queue > _this.user.qpos()) {
+                    _this.stopQueueMonitor();
+                  }
+                }
+                if (data.hasOwnProperty('upcoming')) {
+                  _this.upcomingQueue([]);
+                  _ref = data.history;
+                  _results = [];
+                  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                    item = _ref[_i];
+                    _results.push(_this.upcomingQueue.push(item));
                   }
                   return _results;
                 }
@@ -215,12 +294,26 @@
         })(this);
         this.startQueueMonitor = (function(_this) {
           return function() {
+            _this.stopQueueMonitor();
             _this.getCurrentQueue();
             _this.getCurrentQueueMax();
+            return _this.queueMonitor = setInterval(function() {
+              _this.getCurrentQueue();
+              return _this.getCurrentQueueMax();
+            }, 30000);
+          };
+        })(this);
+        this.adminQueueMonitor = (function(_this) {
+          return function() {
+            _this.stopQueueMonitor();
+            _this.getCurrentQueue();
+            _this.getCurrentQueueMax();
+            _this.getUpcomingQueue();
             _this.getPastQueue();
             return _this.queueMonitor = setInterval(function() {
               _this.getCurrentQueue();
               _this.getCurrentQueueMax();
+              _this.getUpcomingQueue();
               return _this.getPastQueue();
             }, 30000);
           };
@@ -233,7 +326,7 @@
                 return _this.currentPage("queue");
               });
               context.get('#/admin', function() {
-                _this.checkAccess(_this.startQueueMonitor());
+                _this.checkAccess(_this.adminQueueMonitor);
                 return _this.currentPage("admin");
               });
               return context.get(/([^]*)/, function() {
@@ -258,7 +351,6 @@
         })(this);
         this.init = (function(_this) {
           return function() {
-            _this.checkAccess();
             _this.setUpRoutes();
             return _this.selectedTab(_this.tabs()[0]);
           };
