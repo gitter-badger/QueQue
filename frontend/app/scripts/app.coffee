@@ -36,7 +36,7 @@ define [
             #         @startQueueMonitor()
             #         @adminQueueMonitor()
 
-            @ticket = ko.observable false
+            @ticket = ko.observable false, {persist: 'ticket'}
 
             @menuItems = ko.observableArray [
                 {group: "left", path: "#/admin", requireAdmin: true, name: "ADMIN", handle: "admin", active: ko.observable false}

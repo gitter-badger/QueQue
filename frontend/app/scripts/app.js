@@ -34,7 +34,9 @@
           password: ko.observable(null),
           authenticated: ko.observable(false)
         };
-        this.ticket = ko.observable(false);
+        this.ticket = ko.observable(false, {
+          persist: 'ticket'
+        });
         this.menuItems = ko.observableArray([
           {
             group: "left",
