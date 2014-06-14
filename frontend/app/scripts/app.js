@@ -140,7 +140,6 @@
         this.ajaxRequest = (function(_this) {
           return function(options, data) {
             _this.loading.push('ajax');
-            $.support.cors = true;
             return $.ajax({
               type: options.type,
               url: _this.options.API + options.url,

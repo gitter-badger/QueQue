@@ -125,15 +125,11 @@ define [
             @ajaxRequest = (options, data) =>
                 @loading.push('ajax')
                 # headers = $.extend({}, options.headers)
-                $.support.cors = true
                 $.ajax({
                     type: options.type
                     url: this.options.API + options.url
                     dataType: 'json'
                     data: data
-                    # xhrFields:
-                    #     withCredentials: true
-
                     complete: (data) =>
                         @loading.pop()
                     success: options.callback
