@@ -22,9 +22,10 @@ define [
                 edition: ko.observable false
                 subject: ko.observable false
             }
+            @session = ko.observable false, {persist: 'session'}
             @user = {
-                number: ko.observable null
-                qpos: ko.observable -1
+                number: ko.observable null, {persist: 'user.number'}
+                qpos: ko.observable -1, {persist: 'user.qpos'}
             }
             @auth = {
                 password: ko.observable null
@@ -105,16 +106,16 @@ define [
                 @ajaxRequest({
                     type: 'GET'
                     url: 'queue.php'
-                    callback: (data) =>
-                        console.log data
+                    callback: (data, status, xhr) =>
                         if data.status == "OK"
+                            @session data.session
                             @auth.authenticated true
                             @adminQueueMonitor()
                             $('#login-modal').modal('hide')
-                        # else
-                        #     @auth.authenticated false
-                        #     @stopQueueMonitor()
-                        #     @logout()
+                        else
+                            @auth.authenticated false
+                            @stopQueueMonitor()
+                            @logout()
                 },reqData)
 
             @closeModal = ->
@@ -125,9 +126,18 @@ define [
             @ajaxRequest = (options, data) =>
                 @loading.push('ajax')
                 # headers = $.extend({}, options.headers)
+                url = this.options.API + options.url
+                console.log @session()
+                if @session()
+                    separator = '?'
+                    if url.indexOf('?') > -1
+                        separator = '&'
+                    
+                    url += separator+"session="+@session()
+                console.log url 
                 $.ajax({
                     type: options.type
-                    url: this.options.API + options.url
+                    url: url
                     dataType: 'json'
                     data: data
                     complete: (data) =>
@@ -167,6 +177,7 @@ define [
                                 @stopQueueMonitor()
                         if data.hasOwnProperty 'history'
                             @pastQueue []
+                            data.history.reverse()
                             for item in data.history
                                 @pastQueue.push item
                 },false)
@@ -183,7 +194,7 @@ define [
                                 @stopQueueMonitor()
                         if data.hasOwnProperty 'upcoming'
                             @upcomingQueue []
-                            for item in data.history
+                            for item in data.upcoming
                                 @upcomingQueue.push item
                 },false)
             @getCurrentQueueMax = =>
@@ -254,6 +265,9 @@ define [
                     context.get '#/', =>
                         @startQueueMonitor()
                         @currentPage "queue"
+                    context.get '#/tv', =>
+                        @startQueueMonitor()
+                        @currentPage "tv"
                     context.get '#/admin', =>
                         @checkAccess @adminQueueMonitor
                         @currentPage "admin"
@@ -280,6 +294,8 @@ define [
             @init = () =>
                 # @checkAccess()
                 @setUpRoutes()
+                if (@session())
+                    @auth.authenticated true
                 @selectedTab(@tabs()[0]);
             @init()
 

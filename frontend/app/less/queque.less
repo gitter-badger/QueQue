@@ -2,6 +2,7 @@
 
 @black: hsl(0, 0%, 10%);
 @white: hsl(360, 100%, 100%);
+@yellow: #FCFCA4;
 
 h2{
     margin-top: 0;
@@ -78,5 +79,24 @@ h2{
     color: rgba(0, 150, 0, 1);
     &.passed{
         color: rgba(150, 0, 0, 1);
+    }
+}
+
+.current-number{
+    background: @yellow;
+    padding: 0.5em;
+    margin: 0.3em -0.5em;
+    font-size: 2em;
+    border: 1px solid darken(@yellow,10);
+    border-radius: 10px;
+}
+
+.template-tv{
+    background: black;
+    color: @white;
+    .label{
+        text-transform: uppercase;
+        font-size: 1.7em;
+        color: rgba(255, 255, 255, 0.2);
     }
 }

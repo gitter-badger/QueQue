@@ -19,9 +19,16 @@
           edition: ko.observable(false),
           subject: ko.observable(false)
         };
+        this.session = ko.observable(false, {
+          persist: 'session'
+        });
         this.user = {
-          number: ko.observable(null),
-          qpos: ko.observable(-1)
+          number: ko.observable(null, {
+            persist: 'user.number'
+          }),
+          qpos: ko.observable(-1, {
+            persist: 'user.qpos'
+          })
         };
         this.auth = {
           password: ko.observable(null),
@@ -121,12 +128,16 @@
             return _this.ajaxRequest({
               type: 'GET',
               url: 'queue.php',
-              callback: function(data) {
-                console.log(data);
+              callback: function(data, status, xhr) {
                 if (data.status === "OK") {
+                  _this.session(data.session);
                   _this.auth.authenticated(true);
                   _this.adminQueueMonitor();
                   return $('#login-modal').modal('hide');
+                } else {
+                  _this.auth.authenticated(false);
+                  _this.stopQueueMonitor();
+                  return _this.logout();
                 }
               }
             }, reqData);
@@ -139,10 +150,21 @@
         };
         this.ajaxRequest = (function(_this) {
           return function(options, data) {
+            var separator, url;
             _this.loading.push('ajax');
+            url = _this.options.API + options.url;
+            console.log(_this.session());
+            if (_this.session()) {
+              separator = '?';
+              if (url.indexOf('?') > -1) {
+                separator = '&';
+              }
+              url += separator + "session=" + _this.session();
+            }
+            console.log(url);
             return $.ajax({
               type: options.type,
-              url: _this.options.API + options.url,
+              url: url,
               dataType: 'json',
               data: data,
               complete: function(data) {
@@ -190,6 +212,7 @@
                 }
                 if (data.hasOwnProperty('history')) {
                   _this.pastQueue([]);
+                  data.history.reverse();
                   _ref = data.history;
                   _results = [];
                   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -219,7 +242,7 @@
                 }
                 if (data.hasOwnProperty('upcoming')) {
                   _this.upcomingQueue([]);
-                  _ref = data.history;
+                  _ref = data.upcoming;
                   _results = [];
                   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                     item = _ref[_i];
@@ -324,6 +347,10 @@
                 _this.startQueueMonitor();
                 return _this.currentPage("queue");
               });
+              context.get('#/tv', function() {
+                _this.startQueueMonitor();
+                return _this.currentPage("tv");
+              });
               context.get('#/admin', function() {
                 _this.checkAccess(_this.adminQueueMonitor);
                 return _this.currentPage("admin");
@@ -351,6 +378,9 @@
         this.init = (function(_this) {
           return function() {
             _this.setUpRoutes();
+            if (_this.session()) {
+              _this.auth.authenticated(true);
+            }
             return _this.selectedTab(_this.tabs()[0]);
           };
         })(this);

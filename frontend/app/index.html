@@ -24,7 +24,7 @@
     <![endif]-->
 </head>
 
-<body>
+<body data-bind="attr: {'class': 'template-'+currentPage()}">
 
     <div class="loading-indicator" data-bind="visible: loading().length > 0"><div class="throbber">Loading...</div></div>
 
@@ -88,16 +88,6 @@
                                 <button class="btn btn-primary">Get your ticket</button>
                             </form>
                         </div>
-                        <!-- ko if: Access -->
-                        <div class="form well">
-                            <button type="button" class="btn btn-primary pull-right" data-bind="click: nextNumber">Next number</button>
-                            <h2>Queue</h2>
-                            <p>Latest numbers taken</p>
-                            <ul data-bind="foreach: pastQueue">
-                                <li><span data-bind="html: qpos"></span> <span data-bind="html: number"></span></li>
-                            </ul>
-                        </div>
-                        <!-- /ko -->
                     </div>
                 </div>
             </div>
@@ -150,7 +140,7 @@
             <div class="yourTurn" data-bind="visible: user.qpos() != -1 && queue() == user.qpos()">It&#8216;s your turn!</div>
             <div class="yourTurn passed" data-bind="visible: user.qpos() != -1 && queue() > user.qpos()">Your turn has passed!</div>
             <div data-bind="template: {name: 'number-modal-template', if: queueNumber}"></div>
-            <div class="row" data-bind="if: auth.authentication">
+            <div class="row" data-bind="if: auth.authenticated">
                 <div class="col-md-6">
                     <div class="info">
                         <div class="label">Processing</div>
@@ -180,12 +170,37 @@
                         <div class="form well">
                             <button type="button" class="btn btn-primary pull-right" data-bind="click: nextNumber">Next number</button>
                             <h2>Queue</h2>
-                            <p>Latest numbers taken</p>
+
                             <ul data-bind="foreach: pastQueue">
-                                <li><span data-bind="html: qpos"></span> <span data-bind="html: number"></span></li>
+                                <li data-bind="css: {'current-number': qpos == $root.queue()}"><span data-bind="html: qpos"></span> — <span data-bind="html: number"></span></li>
                             </ul>
+                            <ul data-bind="foreach: upcomingQueue">
+                                <li><span data-bind="html: qpos"></span> — <span data-bind="html: number"></span></li>
+                            </ul>
+
                         </div>
                         <!-- /ko -->
+                    </div>
+                </div>
+            </div>
+        </script>
+
+        <script type="text/html" id="tv">
+            <div class="container">
+                <h1>QueQue ticket system</h1>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info">
+                        <div class="label">Processing</div>
+                        <div class="queueNumber" data-bind="html: '#'+queue()"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info">
+                        <div class="label">In queue</div>
+                        <div class="queueNumber" data-bind="html: queueMax() - queue()"></div>
                     </div>
                 </div>
             </div>

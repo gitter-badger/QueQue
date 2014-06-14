@@ -7285,3 +7285,20 @@ h2 {
 .yourTurn.passed {
   color: #960000;
 }
+.current-number {
+  background: #fcfca4;
+  padding: 0.5em;
+  margin: 0.3em -0.5em;
+  font-size: 2em;
+  border: 1px solid #fafa73;
+  border-radius: 10px;
+}
+.template-tv {
+  background: black;
+  color: #ffffff;
+}
+.template-tv .label {
+  text-transform: uppercase;
+  font-size: 1.7em;
+  color: rgba(255, 255, 255, 0.2);
+}
