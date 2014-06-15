@@ -9,7 +9,7 @@ define [
 ], ($, ko, _, sammy) ->
     class QueQue
         options: {
-            API: "http://b.hvornum.se/"
+            API: "http://b.dhsupport.se/"
         }
         constructor: ->
             console.log 'start app'

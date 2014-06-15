@@ -3,7 +3,7 @@
     var QueQue;
     QueQue = (function() {
       QueQue.prototype.options = {
-        API: "http://b.hvornum.se/"
+        API: "http://b.dhsupport.se/"
       };
 
       function QueQue() {
